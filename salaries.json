@@ -1,0 +1,18 @@
+{
+    "Nurato": {
+        "salary": "10000",
+        "status": "Paid"
+    },
+    "satyam": {
+        "salary": "10000",
+        "status": "Unpaid"
+    },
+    "SANIYA BHARTI": {
+        "salary": "5000",
+        "status": "Unpaid"
+    },
+    "Manoj kumar": {
+        "salary": "15000",
+        "status": "Unpaid"
+    }
+}

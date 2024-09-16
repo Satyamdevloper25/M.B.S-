@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Receipt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        form input,
+        form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form input {
+            font-size: 16px;
+        }
+
+        form button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Send Receipt</h1>
+        <form id="receiptForm">
+            <label for="recipientName">Recipient Name</label>
+            <input type="text" id="recipientName" required>
+
+            <label for="salaryAmount">Salary Amount</label>
+            <input type="number" id="salaryAmount" required>
+
+            <label for="date">Date</label>
+            <input type="date" id="date" required>
+
+            <button type="submit">Send Receipt</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('receiptForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById('recipientName').value;
+            const amount = document.getElementById('salaryAmount').value;
+            const date = document.getElementById('date').value;
+
+            // Map recipient names to email addresses
+            const emailMap = {
+                'Satyam Bharti': 'xiufeng926@gmail.com',
+                // Add more name-email mappings here
+                'Prem': 'prem@example.com',
+                'Maynk': 'maynk@example.com',
+                'Aman': 'aman@example.com'
+            };
+
+            const recipientEmail = emailMap[name];
+
+            if (recipientEmail) {
+                sendReceiptEmail(recipientEmail, name, amount, date);
+            } else {
+                alert('No email found for the provided recipient name.');
+            }
+        });
+
+        function sendReceiptEmail(email, name, amount, date) {
+            // Assuming you're using an email service API or backend to send the email
+            const emailBody = `
+                Dear ${name},
+
+                This is a receipt for your salary payment of ₹${amount} on ${new Date(date).toLocaleDateString()}.
+
+                Thank you.
+
+                Best Regards,
+                MBS International School
+            `;
+
+            // Example using EmailJS (you can replace this with your email sending method)
+            emailjs.send("service_l76ge3f", "template_hr2xxoh", {
+                to_email: email,
+                from_name: "MBS International School",
+                message_html: emailBody,
+            }).then((response) => {
+                alert('Receipt sent successfully to ' + email);
+            }, (error) => {
+                alert('Failed to send receipt. Please try again.');
+            });
+        }
+    </script>
+
+    <!-- Include EmailJS or your preferred email sending service script -->
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init("YOUR_USER_ID"); // Replace with your EmailJS user ID
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.B.S International School - Rules & Regulations</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    /* Main CSS Here */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;600&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+:root {
+    --background-color1: #fafaff;
+    --background-color2: #ffffff;
+    --primary-color: #4b49ac;
+    --secondary-color: #0c007d;
+    --border-color: #3f0097;
+}
+
+body {
+    background-color: var(--background-color1);
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+header {
+    height: 70px;
+    width: 100vw;
+    padding: 0 20px;
+    background-color: var(--background-color2);
+    position: fixed;
+    z-index: 100;
+    box-shadow: 1px 1px 15px rgba(161, 182, 253, 0.825);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.icn {
+    height: 30px;
+}
+
+.menuicn {
+    cursor: pointer;
+}
+
+.searchbar {
+    display: flex;
+    align-items: center;
+}
+
+.searchbar input {
+    width: 250px;
+    height: 42px;
+    border-radius: 50px 0 0 50px;
+    background-color: var(--background-color2);
+    padding: 0 20px;
+    font-size: 15px;
+    outline: none;
+    border: none;
+}
+
+.searchbtn {
+    width: 50px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 50px 50px 0;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+}
+
+.message {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.circle {
+    height: 7px;
+    width: 7px;
+    background-color: #fa7bb4;
+    border-radius: 50%;
+    position: absolute;
+    left: 19px;
+    top: 8px;
+}
+
+.dp {
+    height: 40px;
+    width: 40px;
+    background-color: #626262;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.main-container {
+    display: flex;
+    width: 100vw;
+    position: relative;
+    top: 70px;
+}
+
+.nav {
+    width: 250px;
+    background-color: var(--background-color2);
+    box-shadow: 1px 1px 10px rgba(198, 189, 248, 0.825);
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0;
+    transition: transform 0.3s ease-in-out;
+    position: relative;
+}
+
+.navopen {
+    transform: translateX(0);
+}
+
+.nav-upper-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.nav-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-left: 5px solid transparent;
+    transition: background-color 0.3s, border-left 0.3s;
+}
+
+.nav-option:hover {
+    background-color: #dadada;
+    border-left: 5px solid #a2a2a2;
+    cursor: pointer;
+}
+
+.nav-img {
+    height: 30px;
+    margin-right: 15px;
+}
+
+.main {
+    flex: 1;
+    padding: 40px;
+}
+
+.content {
+    max-width: 1200px;
+    margin: auto;
+}
+
+h1 {
+    font-size: 28px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.rules {
+    margin-top: 20px;
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.rules li {
+    font-size: 16px;
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 22px;
+    color: var(--primary-color);
+    margin-top: 20px;
+}
+
+p {
+    font-size: 16px;
+    color: var(--secondary-color);
+}
+
+@media screen and (max-width: 768px) {
+    .nav {
+        width: 100%;
+        transform: translateX(-100%);
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .navopen {
+        transform: translateX(0);
+    }
+
+    .searchbar {
+        display: none;
+    }
+
+    .searchbar2 {
+        display: flex;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .searchbar2 input {
+        width: 100%;
+        border: 2px solid var(--secondary-color);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .logo {
+        font-size: 18px;
+    }
+
+    .icn {
+        height: 25px;
+    }
+
+    .nav-img {
+        height: 20px;
+    }
+
+    .nav-option {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+    .rules li {
+        font-size: 14px;
+    }
+}
+
+</style>
+<body>
+    <header>
+        <div class="logosec">
+            <div class="logo">M.B.S International School</div>
+            <img src="https://media.geeksforgeeks.org/wp-content/uploads/20221210182541/Untitled-design-(30).png"
+                class="icn menuicn" id="menuicn" alt="menu-icon">
+        </div>
+
+        <div class="searchbar">
+            <input type="text" placeholder="Search">
+            <div class="searchbtn">
+                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20221210180758/Untitled-design-(28).png"
+                    class="icn srchicn" alt="search-icon">
+            </div>
+        </div>
+
+        <div class="message">
+            <div class="circle"></div>
+            <img src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183322/8.png" class="icn" alt="">
+            <div class="dp">
+                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20221210180014/profile-removebg-preview.png"
+                    class="dpicn" alt="dp">
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <nav class="nav">
+            <div class="nav-upper-options">
+                <div class="nav-option option1">
+                    <img src="https://media.geeksforgeeks.org/wp-content/uploads/20221210182148/Untitled-design-(29).png"
+                        class="nav-img" alt="dashboard">
+                    <h3 ontap="teacher.html"> Dashboard</h3>
+                </div>
+                <!-- Add more nav options here -->
+            </div>
+        </nav>
+
+        <div class="main">
+            <div class="content">
+                <h1>Rules and Regulations</h1>
+                <p>Welcome to M.B.S International School. Please adhere to the following rules and regulations:</p>
+
+                <ul class="rules">
+                    <li>Respect for all staff and fellow students is mandatory.</li>
+                    <li>Uniforms must be worn at all times during school hours.</li>
+                    <li>No mobile phones or electronic devices are allowed in class.</li>
+                    <li>Students must adhere to the school timetable and attend all classes regularly.</li>
+                    <li>Any form of bullying or harassment will not be tolerated.</li>
+                    <li>Keep the school premises clean and tidy.</li>
+                    <li>Follow all safety protocols as instructed by the school administration.</li>
+                </ul>
+
+                <h2>Contact Information</h2>
+                <p>If you have any questions or need further information, please contact us at:</p>
+                <p>Email: manojluv89@gmail.com</p>
+                <p>Phone: 8298331337</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let menuicn = document.querySelector(".menuicn");
+        let nav = document.querySelector(".nav");
+
+        menuicn.addEventListener("click", () => {
+            nav.classList.toggle("navopen");
+        });
+    </script>
+</body>
+
+</html>

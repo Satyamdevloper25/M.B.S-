@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e0e0e0;
+            background-image: linear-gradient(45deg, #f5f5f5, #e0e0e0);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .input-group button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .input-group button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .circulars {
+            margin-top: 30px;
+        }
+
+        .circular {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .circular:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .circular h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .circular p {
+            margin: 5px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .circular small {
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Circular Management</h1>
+        <div class="input-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" placeholder="Enter circular title">
+        </div>
+        <div class="input-group">
+            <label for="content">Content</label>
+            <textarea id="content" rows="4" placeholder="Enter circular content"></textarea>
+        </div>
+        <div class="input-group">
+            <button onclick="addCircular()">Add Circular</button>
+        </div>
+        <div class="circulars" id="circulars">
+            <!-- Circulars will be displayed here -->
+        </div>
+    </div>
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAyf4UxAJlsT3EjbNIVqCKQ4cjecrRgI0A",
+        authDomain: "myauth-78eab.firebaseapp.com",
+        databaseURL: "https://myauth-78eab-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "myauth-78eab",
+        storageBucket: "myauth-78eab.appspot.com",
+        messagingSenderId: "1081084619188",
+        appId: "1:1081084619188:web:cb90c0140814cc6cfa2ae1"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    window.addCircular = function() {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+
+        if (title && content) {
+            const newCircularRef = push(ref(database, 'circulars'));
+            set(newCircularRef, {
+                title: title,
+                content: content,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
+                loadCirculars();
+            }).catch(error => {
+                console.error("Error adding circular:", error);
+            });
+        } else {
+            alert('Please fill out both fields.');
+        }
+    }
+
+    function loadCirculars() {
+        const circularsRef = ref(database, 'circulars');
+        onValue(circularsRef, (snapshot) => {
+            const circularsContainer = document.getElementById('circulars');
+            circularsContainer.innerHTML = '';
+            snapshot.forEach((childSnapshot) => {
+                const circular = childSnapshot.val();
+                const circularElement = document.createElement('div');
+                circularElement.className = 'circular';
+                circularElement.innerHTML = `
+                    <h3>${circular.title}</h3>
+                    <p>${circular.content}</p>
+                    <p><small>${new Date(circular.timestamp).toLocaleString()}</small></p>
+                `;
+                circularsContainer.appendChild(circularElement);
+            });
+        }, error => {
+            console.error("Error loading circulars:", error);
+        });
+    }
+
+    // Load circulars on page load
+    loadCirculars();
+</script>
+</html>

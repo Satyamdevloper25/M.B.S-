@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Attendance Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #attendance-form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #attendance-table {
+            width: 100%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        #attendance-table th, #attendance-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        #attendance-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teacher Attendance Management</h1>
+    
+    <div id="attendance-form">
+        <h2>Mark Attendance</h2>
+        <label for="date">Date:</label>
+        <input type="date" id="date">
+        <label for="status">Status:</label>
+        <select id="status">
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+        </select>
+        <button class="btn" id="submit-btn">Submit Attendance</button>
+    </div>
+
+    <h2>Your Attendance Records</h2>
+    <table id="attendance-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Attendance records will be displayed here -->
+        </tbody>
+    </table>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    
+        // Initialize Firebase
+        const firebaseConfig = {
+        apiKey: "AIzaSyAyf4UxAJlsT3EjbNIVqCKQ4cjecrRgI0A",
+        authDomain: "myauth-78eab.firebaseapp.com",
+        projectId: "myauth-78eab",
+        storageBucket: "myauth-78eab.appspot.com",
+        messagingSenderId: "1081084619188",
+        appId: "1:1081084619188:web:cb90c0140814cc6cfa2ae1"
+    };
+
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+    
+        const submitBtn = document.getElementById('submit-btn');
+        const attendanceTable = document.getElementById('attendance-table').querySelector('tbody');
+    
+        let currentUser = null;
+    
+        // Check if the user is authenticated and get their role
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user; // Set the authenticated user
+                console.log("User is authenticated:", currentUser);
+    
+                // Check the user's role
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const role = userDoc.data().role;
+    
+                    if (role === 'admin') {
+                        submitBtn.style.display = 'block'; // Show submit button only for admin
+                    } else {
+                        submitBtn.style.display = 'none'; // Hide submit button for teachers
+                    }
+                } else {
+                    console.error("No role found for user:", user.uid);
+                }
+    
+                loadAttendance(); // Load attendance data
+            } else {
+                console.warn("User is not authenticated.");
+            }
+        });
+    
+        // Event listener for submitting attendance (admin only)
+        submitBtn.addEventListener('click', async () => {
+            const date = document.getElementById('date').value;
+            const status = document.getElementById('status').value;
+    
+            if (currentUser) {
+                if (date && status) {
+                    try {
+                        // Assuming you have a field in the form where the admin selects the teacher's UID
+                        const teacherUID = document.getElementById('teacher-uid').value;
+                        const attendanceRef = collection(db, "teachers", teacherUID, "attendance");
+                        await addDoc(attendanceRef, {
+                            date: date,
+                            status: status
+                        });
+                        alert('Attendance recorded successfully');
+                        loadAttendance(); // Reload the attendance records
+                    } catch (error) {
+                        console.error("Error adding attendance: ", error);
+                    }
+                } else {
+                    alert('Please fill in all fields');
+                }
+            } else {
+                console.error("No authenticated user found.");
+            }
+        });
+    
+        // Function to load attendance data
+        async function loadAttendance() {
+            if (currentUser) {
+                const attendanceRef = collection(db, "teachers", currentUser.uid, "attendance");
+                const querySnapshot = await getDocs(query(attendanceRef));
+    
+                attendanceTable.innerHTML = ''; // Clear previous entries
+    
+                querySnapshot.forEach((doc) => {
+                    const attendance = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${attendance.date}</td><td>${attendance.status}</td>`;
+                    attendanceTable.appendChild(row);
+                });
+            } else {
+                console.error("No authenticated user found during attendance load.");
+            }
+        }
+    </script>
+    
+</body>
+</html>

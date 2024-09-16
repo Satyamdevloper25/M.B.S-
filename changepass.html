@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Change Password</h2>
+        <input type="password" id="newPassword" placeholder="Enter new password">
+        <button id="changePassBtn">Change Password</button>
+        <p id="message"></p>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAyf4UxAJlsT3EjbNIVqCKQ4cjecrRgI0A",
+            authDomain: "myauth-78eab.firebaseapp.com",
+            projectId: "myauth-78eab",
+            storageBucket: "myauth-78eab.appspot.com",
+            messagingSenderId: "1081084619188",
+            appId: "1:1081084619188:web:cb90c0140814cc6cfa2ae1"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+
+        document.getElementById('changePassBtn').addEventListener('click', () => {
+            const newPassword = document.getElementById('newPassword').value;
+            const user = auth.currentUser;
+
+            if (user) {
+                user.updatePassword(newPassword).then(() => {
+                    document.getElementById('message').textContent = 'Password changed successfully!';
+                }).catch((error) => {
+                    document.getElementById('message').textContent = `Error: ${error.message}`;
+                });
+            } else {
+                document.getElementById('message').textContent = 'No user is currently signed in.';
+            }
+        });
+    </script>
+</body>
+</html>

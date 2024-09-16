@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Global Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        * {
+            font-family: 'Poppins';
+        }
+        body {
+            font-family: 'Cormorant Garamond';
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #007BFF;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .hamburger-menu {
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .menu-options {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .menu-options.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .menu-options a {
+            display: block;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .menu-options a:last-child {
+            border-bottom: none;
+        }
+
+        .menu-options a:hover,
+        .menu-options a:focus {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        /* Profile Section Styles */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 40px;
+        }
+
+        .profile-section img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .profile-section h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        /* Container Styles */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            background-color: #f9f9f9;
+        }
+
+        /* Paragraph Styles */
+        #para {
+            text-align: center;
+        }
+
+        /* Icon Container Styles */
+        .icon-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 20px;
+        }
+
+        /* Icon Item Styles */
+        .icon-item {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .icon-item:hover,
+        .icon-item:focus {
+            background-color: #e0e0e0;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Icon Styles */
+        .icon-item i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #007BFF;
+        }
+
+        /* Icon Text Styles */
+        .icon-item p {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Footer Styles */
+        .footer {
+            text-align: center;
+            margin: 40px 0;
+            font-size: 16px;
+        }
+
+        .footer i {
+            margin-right: 10px;
+            color: #007BFF;
+        }
+
+        /* Back to Top Button Styles */
+        #back-to-top {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #back-to-top:hover,
+        #back-to-top:focus {
+            background-color: #0056b3;
+            transform: scale(1.1);
+            outline: none;
+        }
+
+        /* Accessibility Enhancements */
+        .menu-options a:focus {
+            outline: 3px solid #007BFF;
+            outline-offset: 2px;
+        }
+
+        .icon-item:focus {
+            outline: 3px solid #007BFF;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>SkoolLink</h1>
+        <div class="hamburger-menu" id="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="menu-options" id="menu-options">
+            <a href="logout.html" id="logout-btn">Log Out <i class="fa-solid fa-right-from-bracket"></i></a>
+            <a href="changepass.html">Change Password <i class="fa-solid fa-key"></i></a>
+            <a href="ourteam.html">Our Team <i class="fa-solid fa-users"></i></a>
+        </div>
+    </header>
+
+    <div class="profile-section">
+        <!-- Replace 'path-to-image/profile.jpg' with actual image path -->
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfYQ0pQrV_2vZ9lN_Oou_D5Kbb40p32G_00w&s" alt="Profile Image">
+        <h2>Welcome Manoj Bharti ,</h2>
+    </div>
+    <div class="container">
+        <div class="icon-container">
+            <div class="icon-item" onclick="location.href='staff.html';">
+                <i class="fas fa-users"></i>
+                <p>Staff</p>
+            </div>
+            <div class="icon-item" onclick="location.href='attendence.html';">
+                <i class="fas fa-calendar-alt"></i>
+                <p>Attendance</p>
+            </div>
+            <div class="icon-item" onclick="location.href='circular.html';">
+                <i class="fas fa-clipboard-list"></i>
+                <p>Group Circular</p>
+            </div>
+            <div class="icon-item" onclick="location.href='reciept.html';">
+                <i class="fas fa-receipt"></i>
+                <p>Receipt</p>
+            </div>
+            <div class="icon-item" onclick="location.href='#';">
+                <i class="fas fa-money-bill-alt"></i>
+                <p>Fee</p>
+            </div>
+            <div class="icon-item" onclick="location.href='status.html';">
+                <i class="fas fa-chart-bar"></i>
+                <p>Status</p>
+            </div>
+            <div class="icon-item" onclick="location.href='admin.html';">
+                <i class="fas fa-cogs"></i>
+                <p>Admin</p>
+            </div>
+            
+            <div class="icon-item" onclick="location.href='calender.html';">
+                <i class="fa fa-calendar"></i>
+                <p id="para">Events and calender</p>
+            </div>
+        </div>
+        <div class="footer">
+            <i class="fas fa-graduation-cap"></i> <span>© 2024 SkoolLink. All Rights Reserved.</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyf4UxAJlsT3EjbNIVqCKQ4cjecrRgI0A",
+            authDomain: "myauth-78eab.firebaseapp.com",
+            projectId: "myauth-78eab",
+            storageBucket: "myauth-78eab.appspot.com",
+            messagingSenderId: "1081084619188",
+            appId: "1:1081084619188:web:cb90c0140814cc6cfa2ae1"
+        };
+
+        initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        // Toggle menu function
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const menuOptions = document.getElementById('menu-options');
+
+        hamburgerMenu.addEventListener('click', () => {
+            menuOptions.classList.toggle('show');
+        });
+
+        // Close the menu if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.hamburger-menu, .hamburger-menu *')) {
+                if (menuOptions.classList.contains('show')) {
+                    menuOptions.classList.remove('show');
+                }
+            }
+        };
+
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            signOut(auth).then(() => {
+                console.log("User logged out");
+                window.location.href = "loginauthen.html";
+            }).catch((error) => {
+                console.error("Logout error: ", error);
+            });
+        });
+    </script>
+</body>
+</html>

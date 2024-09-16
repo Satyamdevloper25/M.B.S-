@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Calendar</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Import Poppins font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .calendar {
+            width: 80vw;
+            max-width: 900px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 2px solid #ddd;
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        #month-year {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .calendar-body {
+            padding: 16px;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            font-weight: 600;
+            background-color: #f0f0f0;
+            padding: 8px 0;
+        }
+
+        .day {
+            text-align: center;
+            padding: 8px;
+            background-color: #e0e0e0;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .calendar-dates {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .date {
+            text-align: center;
+            padding: 16px;
+            cursor: pointer;
+            position: relative;
+            font-size: 16px;
+        }
+
+        .date:hover {
+            background-color: #f0f0f0;
+        }
+
+        .holiday {
+            background-color: #ff6f61;
+            color: #ffffff;
+            border-radius: 50%;
+            position: relative;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 12px;
+        }
+
+        .holiday::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #ff6f61;
+            background: #ffffff;
+            padding: 2px 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar">
+        <div class="calendar-header">
+            <button id="prev-month">&lt;</button>
+            <h2 id="month-year"></h2>
+            <button id="next-month">&gt;</button>
+        </div>
+        <div class="calendar-body">
+            <div class="calendar-days">
+                <div class="day">Sun</div>
+                <div class="day">Mon</div>
+                <div class="day">Tue</div>
+                <div class="day">Wed</div>
+                <div class="day">Thu</div>
+                <div class="day">Fri</div>
+                <div class="day">Sat</div>
+            </div>
+            <div class="calendar-dates" id="calendar-dates"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const monthYearElement = document.getElementById('month-year');
+            const calendarDatesElement = document.getElementById('calendar-dates');
+            const prevMonthButton = document.getElementById('prev-month');
+            const nextMonthButton = document.getElementById('next-month');
+
+            let currentDate = new Date();
+
+            // Define school holidays for each month
+            const holidays = {
+                0: {26: 'Republic Day'},
+                1: {24: 'Guru Ravidas Jayanthi'},
+                2: {8: 'Maha Shivrathri', 22: 'Bihar Diwas', 26: 'Holi', 27: 'Holi', 29: 'Good Friday'},
+                3: {11: 'Idul-Fitr', 14: 'Bhimrao Ambedkar Jayanti', 17: 'Ram Navmi', 21: 'Mahavir Jayanthi'},
+                4: {1: 'May Day(Shram Diwas)', 23: 'Budha Purnima'},
+                5: {17: 'Id-Ul-Zuha (Bakri Eid)'},
+                6: {17: 'Muharram'},
+                7: {15: 'Independence Day', 19: 'Raksha Bandhan', 26: 'Sreekrishna Janmashtami'},
+                8: {2: 'Mahatma Gandhi Jayanti', 11: 'Durga Puja(Maha Astham/Navami)', 12: 'Durga Puja(Maha Navami)'},
+                9: {31: 'Deepavali'},
+                10: {7: 'Chhath Puja', 8: 'Chhath Puja'},
+                11: {25: 'Christmas'}
+            };
+
+            function renderCalendar() {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+
+                // Set month and year in the header
+                monthYearElement.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+
+                // Get the first day of the month
+                const firstDay = new Date(year, month, 1).getDay();
+                // Get the number of days in the month
+                const totalDays = new Date(year, month + 1, 0).getDate();
+
+                // Create the calendar dates
+                calendarDatesElement.innerHTML = '';
+
+                // Fill in the days before the start of the month
+                for (let i = 0; i < firstDay; i++) {
+                    calendarDatesElement.innerHTML += '<div class="date"></div>';
+                }
+
+                // Fill in the days of the month
+                for (let i = 1; i <= totalDays; i++) {
+                    const holidayName = holidays[month] && holidays[month][i];
+                    calendarDatesElement.innerHTML += `<div class="date ${holidayName ? 'holiday' : ''}" ${holidayName ? `data-name="${holidayName}"` : ''}>${i}</div>`;
+                }
+            }
+
+            prevMonthButton.addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+
+            nextMonthButton.addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+
+            // Initial render
+            renderCalendar();
+        });
+    </script>
+</body>
+</html>

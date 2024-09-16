@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+        }
+
+        .invoice-generator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #007BFF;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+            color: #555;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #invoices-container {
+            margin-top: 30px;
+        }
+
+        .invoice {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .invoice h2 {
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+
+        .invoice p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .delete-invoice {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 60px;
+        }
+
+        .delete-invoice:hover {
+            background-color: #c82333;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .invoice-generator {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            button {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            input, textarea {
+                font-size: 14px;
+            }
+
+            .invoice h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+    <div class="invoice-generator">
+        <h1>Invoice Generator</h1>
+        <form id="invoice-form">
+            <label for="invoice-number">Invoice Number:</label>
+            <input type="text" id="invoice-number" name="invoice-number" required>
+            
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+            
+            <label for="bill-to">Bill To:</label>
+            <input type="text" id="bill-to" name="bill-to" placeholder="Teacher Name" required>
+            
+            <label for="items">Description:</label>
+            <textarea id="items" name="items" placeholder="Add Description (Optional)" required></textarea>
+            
+            <label for="total">Total:</label>
+            <input type="number" id="total" name="total" placeholder="Enter total amount" required>
+            
+            <button id="generate-invoice" type="submit">Generate Invoice</button>
+        </form>
+        
+        <div id="invoices-container"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyf4UxAJlsT3EjbNIVqCKQ4cjecrRgI0A",
+            authDomain: "myauth-78eab.firebaseapp.com",
+            databaseURL: "https://myauth-78eab-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "myauth-78eab",
+            storageBucket: "myauth-78eab.appspot.com",
+            messagingSenderId: "1081084619188",
+            appId: "1:1081084619188:web:cb90c0140814cc6cfa2ae1"
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const form = document.getElementById('invoice-form');
+        const invoiceNumberInput = document.getElementById('invoice-number');
+        const dateInput = document.getElementById('date');
+        const billToInput = document.getElementById('bill-to');
+        const itemsInput = document.getElementById('items');
+        const totalInput = document.getElementById('total');
+        const invoicesContainer = document.getElementById('invoices-container');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            generateInvoice();
+        });
+
+        async function generateInvoice() {
+            const invoiceNumber = invoiceNumberInput.value.trim();
+            const date = dateInput.value.trim();
+            const billTo = billToInput.value.trim();
+            const items = itemsInput.value.trim().split('\n').filter(item => item.trim() !== '');
+            const total = totalInput.value.trim();
+
+            if (!invoiceNumber || !date || !billTo || items.length === 0 || !total) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const docRef = await addDoc(collection(db, "invoices"), {
+                    invoiceNumber,
+                    date,
+                    billTo,
+                    items,
+                    total
+                });
+                console.log("Document written with ID: ", docRef.id);
+                form.reset();
+                loadInvoices();
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+        }
+
+        async function deleteInvoice(invoiceId) {
+            try {
+                await deleteDoc(doc(db, "invoices", invoiceId));
+                document.getElementById(invoiceId).remove();
+            } catch (e) {
+                console.error("Error removing document: ", e);
+            }
+        }
+
+        async function loadInvoices() {
+            const querySnapshot = await getDocs(collection(db, "invoices"));
+            invoicesContainer.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const { invoiceNumber, date, billTo, items, total } = doc.data();
+                const invoiceHTML = `
+                    <div class="invoice" id="${doc.id}">
+                        <button class="delete-invoice" onclick="deleteInvoice('${doc.id}')">Delete</button>
+                        <h2>Invoice #${invoiceNumber}</h2>
+                        <p><strong>Date:</strong> ${date}</p>
+                        <p><strong>Bill To:</strong> ${billTo}</p>
+                        <h3>Items:</h3>
+                        <ul>
+                            ${items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                        <p><strong>Total:</strong> ₹${total}</p>
+                    </div>
+                `;
+                invoicesContainer.insertAdjacentHTML('beforeend', invoiceHTML);
+            });
+        }
+
+        // Load existing invoices on page load
+        document.addEventListener('DOMContentLoaded', loadInvoices);
+    </script>
+   </body>
+   </html>
